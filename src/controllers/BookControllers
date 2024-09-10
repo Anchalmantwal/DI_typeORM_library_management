@@ -1,0 +1,59 @@
+import { injectable, inject } from "inversify";
+import BaseController from "./BaseController";
+import { Request, Response } from "express";
+import { IBookService } from "../interfaces/IBookService";
+import { TYPES } from "../config/types";
+
+@injectable()
+export default class BookController extends BaseController {
+  private _bookService: IBookService;
+
+  constructor(@inject(TYPES.IBookService) bookService: IBookService) {
+    super();
+    this._bookService = bookService;
+  }
+
+  async handleGetAll(req: Request, res: Response) {
+    try {
+      const books = await this._bookService.getAllBooks();
+      return this.sendJSONResponse(res, "Got the list of books!", books);
+    } catch (err: any) {
+      this.sendErrorResponse(res, err);
+    }
+  }
+
+  async handleCreateBook(req: Request, res: Response) {
+    try {
+      const book = req.body;
+      const savedBook = await this._bookService.createBook(book);
+      return this.sendJSONResponse(res, "Book is created!", savedBook);
+    } catch (err: any) {
+      this.sendErrorResponse(res, err);
+    }
+  }
+
+  async handleUpdateBook(req: Request, res: Response) {
+    try {
+      const { book_name, author_name, published_year } = req.body;
+      const _id = Number(req.params._id);
+      const updatedBook = await this._bookService.updateBook(_id, {
+        book_name,
+        author_name,
+        published_year,
+      });
+      return this.sendJSONResponse(res, "Book is updated!", updatedBook);
+    } catch (err: any) {
+      this.sendErrorResponse(res, err);
+    }
+  }
+
+  async handleDeleteBook(req: Request, res: Response) {
+    try {
+      const _id = Number(req.params._id);
+      await this._bookService.deleteBook(_id);
+      return this.sendJSONResponse(res, "Book is deleted!", null);
+    } catch (err: any) {
+      this.sendErrorResponse(res, err);
+    }
+  }
+}
