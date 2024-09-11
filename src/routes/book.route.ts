@@ -1,10 +1,12 @@
 import { Router } from "express";
 import BookController from "../controllers/BookController";
 import { myContainer } from "../config/container";
-const router = Router();
+import { IBookService } from "../interfaces/IBookService";
 import { TYPES } from "../config/types";
+const router = Router();
 
-const bookController = myContainer.get<BookController>(TYPES.BookController);
+const bookService = myContainer.get<IBookService>(TYPES.IBookService);
+const bookController = new BookController(bookService);
 router.get("/", (req, res) => bookController.handleGetAll(req, res));
 
 router.post("/", (req, res) => bookController.handleCreateBook(req, res));
