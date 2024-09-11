@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { injectable } from "inversify";
-@injectable()
+
 export default class BaseController {
   sendJSONResponse(res: Response, message: string | null, data: any | null) {
     const response: any = {
